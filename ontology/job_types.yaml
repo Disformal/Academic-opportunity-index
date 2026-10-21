@@ -1,0 +1,70 @@
+# Job type normalization dictionary for AOI
+#
+# Maps raw phrasings from source systems to canonical type names.
+# Matching is case-insensitive. The first match wins (order within
+# a canonical type does not matter; order across types does not matter).
+#
+# INSPIRE uses: ranks[] array with values like "POSTDOC", "PHD", "SENIOR",
+#   "JUNIOR", "MASTER", "UNDERGRADUATE", "OTHER", "STAFF"
+# EURAXESS uses: "Researcher Profile" field with EU R1-R4 framework:
+#   R1 = First Stage Researcher (up to PhD)
+#   R2 = Recognised Researcher (PhD holders / postdocs)
+#   R3 = Established Researcher (developed independence)
+#   R4 = Leading Researcher (leading their field)
+#
+# Version: 1
+# Updated: 2026-09-25
+
+phd:
+  - "PHD"
+  - "PhD"
+  - "Doctoral"
+  - "Doctoral Candidate"
+  - "Postgraduate"
+  - "First Stage Researcher (R1)"
+
+postdoc:
+  - "POSTDOC"
+  - "Postdoc"
+  - "Post-doctoral"
+  - "Postdoctoral"
+  - "Research Associate"
+  - "Recognised Researcher (R2)"
+
+senior:
+  - "SENIOR"
+  - "Senior Researcher"
+  - "Senior Scientist"
+  - "Established Researcher (R3)"
+
+faculty:
+  - "STAFF"
+  - "Professor"
+  - "Lecturer"
+  - "Assistant Professor"
+  - "Associate Professor"
+  - "Full Professor"
+  - "Leading Researcher (R4)"
+
+junior:
+  - "JUNIOR"
+  - "Junior Researcher"
+  - "Junior Scientist"
+
+master:
+  - "MASTER"
+  - "Master"
+  - "MSc"
+
+undergraduate:
+  - "UNDERGRADUATE"
+  - "Undergraduate"
+  - "BSc"
+  - "Bachelor"
+
+fellowship:
+  - "Fellowship"
+  - "Research Fellowship"
+
+other:
+  - "OTHER"

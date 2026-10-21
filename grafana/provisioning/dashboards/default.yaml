@@ -1,0 +1,7 @@
+apiVersion: 1
+providers:
+  - name: AOI
+    type: file
+    options:
+      path: /var/lib/grafana/dashboards
+      foldersFromFilesStructure: true

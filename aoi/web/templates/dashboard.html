@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<section class="dashboard-section">
+  <h1>Pipeline Health Dashboard</h1>
+
+  <div class="dashboard-summary">
+    <div class="stat-card">
+      <span class="stat-value">{{ aggregates.total }}</span>
+      <span class="stat-label">Total Opportunities</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value">{{ aggregates.open }}</span>
+      <span class="stat-label">Open</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value">{{ aggregates.closed }}</span>
+      <span class="stat-label">Closed</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value">{{ aggregates.cluster_count }}</span>
+      <span class="stat-label">Dedup Clusters</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value">{{ "%.2f%%"|format(aggregates.dedup_ratio * 100) }}</span>
+      <span class="stat-label">Dedup Ratio</span>
+    </div>
+  </div>
+
+  <h2>Source Health</h2>
+  {% if source_health %}
+  <table>
+    <thead>
+      <tr>
+        <th>Source</th>
+        <th>Score</th>
+        <th>Available</th>
+        <th>Total</th>
+        <th>Last Crawl</th>
+        <th>Consecutive Failures</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for sh in source_health %}
+      <tr>
+        <td><a href="/source/{{ sh.source.id }}">{{ sh.source.name }}</a></td>
+        <td class="health-score health-{{ 'good' if sh.score >= 70 else ('warn' if sh.score >= 40 else 'bad') }}">{{ sh.score }}</td>
+        <td>{{ sh.records_available }}</td>
+        <td>{{ sh.records_total }}</td>
+        <td>{{ sh.last_crawl_at.strftime('%Y-%m-%d %H:%M') if sh.last_crawl_at else "Never" }}</td>
+        <td>{{ sh.consecutive_failures }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>No enabled sources.</p>
+  {% endif %}
+
+  {% if aggregates.by_type %}
+  <h2>Opportunities by Type</h2>
+  <table>
+    <thead>
+      <tr><th>Type</th><th>Count</th></tr>
+    </thead>
+    <tbody>
+      {% for type_name, count in aggregates.by_type %}
+      <tr><td>{{ type_name }}</td><td>{{ count }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+
+  {% if aggregates.closure_by_source %}
+  <h2>Closure Rate by Source</h2>
+  <table>
+    <thead>
+      <tr><th>Source</th><th>Closed</th><th>Total</th><th>Rate</th></tr>
+    </thead>
+    <tbody>
+      {% for src_name, closed, total in aggregates.closure_by_source %}
+      <tr>
+        <td>{{ src_name }}</td>
+        <td>{{ closed }}</td>
+        <td>{{ total }}</td>
+        <td>{{ "%.1f%%"|format(closed / total * 100) if total > 0 else "—" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+
+  {% if aggregates.fetch_outcomes %}
+  <h2>Fetch Outcomes</h2>
+  <table>
+    <thead>
+      <tr><th>Outcome</th><th>Count</th></tr>
+    </thead>
+    <tbody>
+      {% for outcome, count in aggregates.fetch_outcomes %}
+      <tr><td>{{ outcome }}</td><td>{{ count }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+
+  {% if evidence %}
+  <h2>Evidence Store</h2>
+  <table>
+    <thead>
+      <tr><th>Bucket</th><th>Objects</th></tr>
+    </thead>
+    <tbody>
+      {% for bucket, stats in evidence.items() %}
+      <tr><td>{{ bucket }}</td><td>{{ stats.object_count }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="note">Evidence store stats unavailable.</p>
+  {% endif %}
+</section>
+{% endblock %}

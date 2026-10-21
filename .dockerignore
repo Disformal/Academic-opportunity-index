@@ -1,0 +1,22 @@
+# ─── AOI Docker ignore ────────────────────────────────────────────────────────
+.git
+.github
+.venv
+.env
+.env.local
+.mypy_cache
+.pytest_cache
+.ruff_cache
+__pycache__
+*.pyc
+backups/
+logs/
+reference/
+tests/
+nginx/htpasswd
+docker-compose.yml
+docker-compose.prod.yml
+Dockerfile
+*.md
+*.tex
+*.csv

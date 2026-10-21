@@ -1,0 +1,13 @@
+# ─── AOI Scheduled Tasks (supercronic) ────────────────────────────────────────
+# This file is read by supercronic in the scheduler container.
+# Logs go to stdout, captured by Docker.
+# All times are UTC.
+
+# INSPIRE-HEP: every 6 hours (API source, fast)
+0 */6 * * * /app/.venv/bin/python -m aoi.pipeline.run --source inspire
+
+# EURAXESS: daily at 02:00 UTC (scraper source, slower)
+0 2 * * * /app/.venv/bin/python -m aoi.pipeline.run --source euraxess
+
+# Health check: hourly, scan all sources for consecutive failures
+0 * * * * /app/.venv/bin/python scripts/notify.py --health-check

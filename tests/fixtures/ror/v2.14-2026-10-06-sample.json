@@ -1,0 +1,603 @@
+[
+    {
+        "locations": [
+            {
+                "geonames_id": 4528866,
+                "geonames_details": {
+                    "continent_code": "NA",
+                    "continent_name": "North America",
+                    "country_code": "US",
+                    "country_name": "United States",
+                    "country_subdivision_code": "OH",
+                    "country_subdivision_name": "Ohio",
+                    "lat": 39.80645,
+                    "lng": -83.88687,
+                    "name": "Yellow Springs"
+                }
+            }
+        ],
+        "established": 1852,
+        "external_ids": [
+            {
+                "type": "grid",
+                "all": [
+                    "grid.252289.6"
+                ],
+                "preferred": "grid.252289.6"
+            },
+            {
+                "type": "isni",
+                "all": [
+                    "0000 0001 0043 7948"
+                ],
+                "preferred": null
+            },
+            {
+                "type": "wikidata",
+                "all": [
+                    "Q4775035"
+                ],
+                "preferred": null
+            }
+        ],
+        "id": "https://ror.org/03ekzka28",
+        "domains": [],
+        "links": [
+            {
+                "type": "website",
+                "value": "http://www.antioch.edu/"
+            },
+            {
+                "type": "wikipedia",
+                "value": "http://en.wikipedia.org/wiki/Antioch_University"
+            }
+        ],
+        "names": [
+            {
+                "value": "Antioch University",
+                "types": [
+                    "ror_display",
+                    "label"
+                ],
+                "lang": "en"
+            }
+        ],
+        "relationships": [
+            {
+                "type": "child",
+                "label": "Antioch University New England",
+                "id": "https://ror.org/00nzje529"
+            }
+        ],
+        "status": "active",
+        "types": [
+            "education"
+        ],
+        "admin": {
+            "created": {
+                "date": "2018-11-14",
+                "schema_version": "1.0"
+            },
+            "last_modified": {
+                "date": "2024-12-11",
+                "schema_version": "2.1"
+            }
+        }
+    },
+    {
+        "locations": [
+            {
+                "geonames_id": 5088262,
+                "geonames_details": {
+                    "continent_code": "NA",
+                    "continent_name": "North America",
+                    "country_code": "US",
+                    "country_name": "United States",
+                    "country_subdivision_code": "NH",
+                    "country_subdivision_name": "New Hampshire",
+                    "lat": 42.93369,
+                    "lng": -72.27814,
+                    "name": "Keene"
+                }
+            }
+        ],
+        "established": 1964,
+        "external_ids": [
+            {
+                "type": "grid",
+                "all": [
+                    "grid.252292.c"
+                ],
+                "preferred": "grid.252292.c"
+            },
+            {
+                "type": "isni",
+                "all": [
+                    "0000 0004 0470 9789"
+                ],
+                "preferred": null
+            },
+            {
+                "type": "wikidata",
+                "all": [
+                    "Q4775041"
+                ],
+                "preferred": null
+            }
+        ],
+        "id": "https://ror.org/00nzje529",
+        "domains": [],
+        "links": [
+            {
+                "type": "website",
+                "value": "http://www.antiochne.edu/"
+            },
+            {
+                "type": "wikipedia",
+                "value": "http://en.wikipedia.org/wiki/Antioch_University_New_England"
+            }
+        ],
+        "names": [
+            {
+                "value": "Antioch New England Graduate School",
+                "types": [
+                    "alias"
+                ],
+                "lang": "en"
+            },
+            {
+                "value": "Antioch University New England",
+                "types": [
+                    "ror_display",
+                    "label"
+                ],
+                "lang": "en"
+            }
+        ],
+        "relationships": [
+            {
+                "type": "parent",
+                "label": "Antioch University",
+                "id": "https://ror.org/03ekzka28"
+            }
+        ],
+        "status": "active",
+        "types": [
+            "education"
+        ],
+        "admin": {
+            "created": {
+                "date": "2018-11-14",
+                "schema_version": "1.0"
+            },
+            "last_modified": {
+                "date": "2024-12-11",
+                "schema_version": "2.1"
+            }
+        }
+    },
+    {
+        "locations": [
+            {
+                "geonames_id": 5391959,
+                "geonames_details": {
+                    "continent_code": "NA",
+                    "continent_name": "North America",
+                    "country_code": "US",
+                    "country_name": "United States",
+                    "country_subdivision_code": "CA",
+                    "country_subdivision_name": "California",
+                    "lat": 37.77493,
+                    "lng": -122.41942,
+                    "name": "San Francisco"
+                }
+            }
+        ],
+        "established": 2003,
+        "external_ids": [
+            {
+                "type": "grid",
+                "all": [
+                    "grid.431302.7"
+                ],
+                "preferred": "grid.431302.7"
+            },
+            {
+                "type": "isni",
+                "all": [
+                    "0000 0004 0482 455X"
+                ],
+                "preferred": null
+            },
+            {
+                "type": "wikidata",
+                "all": [
+                    "Q233358"
+                ],
+                "preferred": null
+            }
+        ],
+        "id": "https://ror.org/008zgvp64",
+        "domains": [],
+        "links": [
+            {
+                "type": "website",
+                "value": "https://www.plos.org/"
+            },
+            {
+                "type": "wikipedia",
+                "value": "https://en.wikipedia.org/wiki/PLOS"
+            }
+        ],
+        "names": [
+            {
+                "value": "PLOS",
+                "types": [
+                    "acronym"
+                ],
+                "lang": null
+            },
+            {
+                "value": "Public Library of Science",
+                "types": [
+                    "ror_display",
+                    "label"
+                ],
+                "lang": "en"
+            }
+        ],
+        "relationships": [],
+        "status": "active",
+        "types": [
+            "archive"
+        ],
+        "admin": {
+            "created": {
+                "date": "2018-11-14",
+                "schema_version": "1.0"
+            },
+            "last_modified": {
+                "date": "2024-12-11",
+                "schema_version": "2.1"
+            }
+        }
+    },
+    {
+        "locations": [
+            {
+                "geonames_id": 2653941,
+                "geonames_details": {
+                    "continent_code": "EU",
+                    "continent_name": "Europe",
+                    "country_code": "GB",
+                    "country_name": "United Kingdom",
+                    "country_subdivision_code": "ENG",
+                    "country_subdivision_name": "England",
+                    "lat": 52.2,
+                    "lng": 0.11667,
+                    "name": "Cambridge"
+                }
+            }
+        ],
+        "established": 2001,
+        "external_ids": [
+            {
+                "type": "grid",
+                "all": [
+                    "grid.466955.d"
+                ],
+                "preferred": "grid.466955.d"
+            }
+        ],
+        "id": "https://ror.org/03bdvdc06",
+        "domains": [],
+        "links": [
+            {
+                "type": "website",
+                "value": "https://www.plos.org/"
+            }
+        ],
+        "names": [
+            {
+                "value": "PLOS",
+                "types": [
+                    "acronym"
+                ],
+                "lang": null
+            },
+            {
+                "value": "Public Library of Science",
+                "types": [
+                    "ror_display",
+                    "label"
+                ],
+                "lang": "en"
+            }
+        ],
+        "relationships": [
+            {
+                "label": "Public Library of Science",
+                "type": "successor",
+                "id": "https://ror.org/008zgvp64"
+            }
+        ],
+        "status": "withdrawn",
+        "types": [
+            "nonprofit"
+        ],
+        "admin": {
+            "created": {
+                "date": "2018-11-14",
+                "schema_version": "1.0"
+            },
+            "last_modified": {
+                "date": "2024-12-11",
+                "schema_version": "2.1"
+            }
+        }
+    },
+    {
+        "locations": [
+            {
+                "geonames_id": 2964574,
+                "geonames_details": {
+                    "continent_code": "EU",
+                    "continent_name": "Europe",
+                    "country_code": "IE",
+                    "country_name": "Ireland",
+                    "country_subdivision_code": "L",
+                    "country_subdivision_name": "Leinster",
+                    "lat": 53.33306,
+                    "lng": -6.24889,
+                    "name": "Dublin"
+                }
+            }
+        ],
+        "established": 1998,
+        "external_ids": [
+            {
+                "type": "fundref",
+                "all": [
+                    "501100001588"
+                ],
+                "preferred": null
+            },
+            {
+                "type": "grid",
+                "all": [
+                    "grid.7088.7"
+                ],
+                "preferred": "grid.7088.7"
+            },
+            {
+                "type": "isni",
+                "all": [
+                    "0000 0004 1759 4183"
+                ],
+                "preferred": null
+            },
+            {
+                "type": "wikidata",
+                "all": [
+                    "Q5380326"
+                ],
+                "preferred": null
+            }
+        ],
+        "id": "https://ror.org/023z51242",
+        "domains": [],
+        "links": [
+            {
+                "type": "website",
+                "value": "http://www.enterprise-ireland.com/en/"
+            },
+            {
+                "type": "wikipedia",
+                "value": "https://en.wikipedia.org/wiki/Enterprise_Ireland"
+            }
+        ],
+        "names": [
+            {
+                "value": "Enterprise Ireland",
+                "types": [
+                    "ror_display",
+                    "label"
+                ],
+                "lang": "en"
+            }
+        ],
+        "relationships": [],
+        "status": "active",
+        "types": [
+            "government",
+            "funder"
+        ],
+        "admin": {
+            "created": {
+                "date": "2018-11-14",
+                "schema_version": "1.0"
+            },
+            "last_modified": {
+                "date": "2024-12-11",
+                "schema_version": "2.1"
+            }
+        }
+    },
+    {
+        "admin": {
+            "created": {
+                "date": "2024-07-08",
+                "schema_version": "2.0"
+            },
+            "last_modified": {
+                "date": "2024-12-11",
+                "schema_version": "2.1"
+            }
+        },
+        "domains": [
+            "bayanonline.org"
+        ],
+        "established": 2011,
+        "external_ids": [
+            {
+                "all": [
+                    "Q23016649"
+                ],
+                "preferred": "Q23016649",
+                "type": "wikidata"
+            }
+        ],
+        "id": "https://ror.org/04czrrc08",
+        "links": [
+            {
+                "type": "website",
+                "value": "https://www.bayanonline.org"
+            },
+            {
+                "type": "wikipedia",
+                "value": "https://en.wikipedia.org/wiki/Bayan_Islamic_Graduate_School"
+            }
+        ],
+        "locations": [
+            {
+                "geonames_details": {
+                    "continent_code": "NA",
+                    "continent_name": "North America",
+                    "country_code": "US",
+                    "country_name": "United States",
+                    "country_subdivision_code": "IL",
+                    "country_subdivision_name": "Illinois",
+                    "lat": 41.85003,
+                    "lng": -87.65005,
+                    "name": "Chicago"
+                },
+                "geonames_id": 4887398
+            },
+            {
+                "geonames_details": {
+                    "continent_code": "NA",
+                    "continent_name": "North America",
+                    "country_code": "US",
+                    "country_name": "United States",
+                    "country_subdivision_code": "CA",
+                    "country_subdivision_name": "California",
+                    "lat": 33.78779,
+                    "lng": -117.85311,
+                    "name": "Orange"
+                },
+                "geonames_id": 5379513
+            }
+        ],
+        "names": [
+            {
+                "lang": "en",
+                "types": [
+                    "alias"
+                ],
+                "value": "Bayan"
+            },
+            {
+                "lang": "en",
+                "types": [
+                    "alias"
+                ],
+                "value": "Bayan Chicago"
+            },
+            {
+                "lang": "en",
+                "types": [
+                    "label",
+                    "ror_display"
+                ],
+                "value": "Bayan Islamic Graduate School"
+            }
+        ],
+        "relationships": [],
+        "status": "active",
+        "types": [
+            "education"
+        ]
+    },
+    {
+        "locations": [
+            {
+                "geonames_id": 264371,
+                "geonames_details": {
+                    "continent_code": "EU",
+                    "continent_name": "Europe",
+                    "country_code": "GR",
+                    "country_name": "Greece",
+                    "country_subdivision_code": "I",
+                    "country_subdivision_name": "Attica",
+                    "lat": 37.98376,
+                    "lng": 23.72784,
+                    "name": "Athens"
+                }
+            }
+        ],
+        "established": 1994,
+        "external_ids": [
+            {
+                "type": "grid",
+                "all": [
+                    "grid.5468.f"
+                ],
+                "preferred": "grid.5468.f"
+            },
+            {
+                "type": "wikidata",
+                "all": [
+                    "Q30252670"
+                ],
+                "preferred": null
+            }
+        ],
+        "id": "https://ror.org/01nn35n25",
+        "domains": [],
+        "links": [
+            {
+                "type": "website",
+                "value": "http://www.iasa.gr/"
+            }
+        ],
+        "names": [
+            {
+                "value": "IASA",
+                "types": [
+                    "acronym"
+                ],
+                "lang": null
+            },
+            {
+                "value": "Institute of Accelerating Systems and Applications",
+                "types": [
+                    "ror_display",
+                    "label"
+                ],
+                "lang": "en"
+            },
+            {
+                "value": "Ινστιτούτο Επιταχυντικών Συστημάτων και Εφαρμογών",
+                "types": [
+                    "label"
+                ],
+                "lang": "el"
+            }
+        ],
+        "relationships": [],
+        "status": "active",
+        "types": [
+            "education"
+        ],
+        "admin": {
+            "created": {
+                "date": "2018-11-14",
+                "schema_version": "1.0"
+            },
+            "last_modified": {
+                "date": "2024-12-11",
+                "schema_version": "2.1"
+            }
+        }
+    }
+]

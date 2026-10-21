@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Search{% endblock %}
+{% block content %}
+<section class="search-section">
+  <h1>Search Opportunities</h1>
+  <form method="get" action="/" class="search-form">
+    <div class="search-row">
+      <input type="text" name="q" value="{{ q }}" placeholder="Search by title, type, or country..." class="search-input">
+      <button type="submit" class="btn">Search</button>
+    </div>
+    <div class="filter-row">
+      <label>
+        Country
+        <input type="text" name="country" value="{{ country }}" placeholder="e.g. DE" maxlength="2" class="filter-input">
+      </label>
+      <label>
+        Source
+        <select name="source" class="filter-input">
+          <option value="">All sources</option>
+          {% for s in all_sources %}
+          <option value="{{ s }}" {% if s == source %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+  </form>
+</section>
+
+<section class="results-section">
+  {% if q or country or source %}
+  <p class="results-count">{{ total }} result{{ "s" if total != 1 else "" }} found</p>
+  {% endif %}
+
+  {% if results %}
+  <div class="card-list">
+    {% for opp in results %}
+    <article class="opp-card">
+      <h2><a href="/opportunity/{{ opp.id }}">{{ opp.title }}</a></h2>
+      <div class="opp-meta">
+        <span class="opp-type">{{ opp.type }}</span>
+        <span class="opp-country">{{ format_country(opp.country) }}</span>
+        {% if opp.deadline %}
+        <span class="opp-deadline">Deadline: {{ opp.deadline.strftime('%Y-%m-%d') }}</span>
+        {% endif %}
+        <span class="opp-status status-{{ opp.status.value }}">{{ opp.status.value }}</span>
+      </div>
+      {% if opp.id in opp_sources %}
+      <div class="opp-sources">
+        {% for src_name in opp_sources[opp.id] %}
+        <span class="source-badge">{{ src_name }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+
+  {% if total_pages > 1 %}
+  <nav class="pagination">
+    {% if page > 1 %}
+    <a href="?q={{ q }}&country={{ country }}&source={{ source }}&page={{ page - 1 }}">&laquo; Previous</a>
+    {% endif %}
+    <span class="page-info">Page {{ page }} of {{ total_pages }}</span>
+    {% if page < total_pages %}
+    <a href="?q={{ q }}&country={{ country }}&source={{ source }}&page={{ page + 1 }}">Next &raquo;</a>
+    {% endif %}
+  </nav>
+  {% endif %}
+
+  {% elif q or country or source %}
+  <p class="no-results">No opportunities match your search.</p>
+  {% else %}
+  <p class="no-results">Enter a search term or select filters to find opportunities.</p>
+  {% endif %}
+</section>
+{% endblock %}

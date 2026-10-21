@@ -1,0 +1,17 @@
+apiVersion: 1
+contactPoints:
+  - orgId: 1
+    name: aoi-email
+    receivers:
+      - uid: aoi-email-receiver
+        type: email
+        settings:
+          addresses: $AOI_ALERT_EMAIL_TO
+  - orgId: 1
+    name: aoi-webhook
+    receivers:
+      - uid: aoi-webhook-receiver
+        type: webhook
+        settings:
+          url: $AOI_ALERT_WEBHOOK_URL
+          httpMethod: POST

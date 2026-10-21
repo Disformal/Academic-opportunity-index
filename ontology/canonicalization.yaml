@@ -1,0 +1,21 @@
+# URL canonicalization rules for AOI
+tracking_params:
+  - utm_source
+  - utm_medium
+  - utm_campaign
+  - utm_term
+  - utm_content
+  - gclid
+  - fbclid
+  - msclkid
+  - mc_cid
+  - mc_eid
+  - igshid
+  - ref
+  - source
+  - _ga
+  - sessionid
+  - jsessionid
+  - phpsessid
+
+max_url_bytes: 2048

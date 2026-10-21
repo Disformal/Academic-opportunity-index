@@ -1,0 +1,169 @@
+# ─── AOI Production Stack ─────────────────────────────────────────────────────
+# Usage:
+#   docker compose -f docker-compose.prod.yml up -d
+#
+# Prerequisites:
+#   1. Copy .env.example to .env and set real values
+#   2. Create htpasswd file: htpasswd -c nginx/htpasswd aoi_admin
+#   3. After first start: docker compose -f docker-compose.prod.yml exec app alembic upgrade head
+#
+# TLS (on VPS):
+#   After certbot is configured, mount certs into nginx and update nginx/default.conf.
+
+services:
+
+  # ─── PostgreSQL 16 ─────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16
+    container_name: aoi-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: aoi
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: aoi
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/init-grafana-ro.sql:/docker-entrypoint-initdb.d/02-init-grafana-ro.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aoi -d aoi"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # ─── SeaweedFS (S3-compatible object store) ────────────────────────────────
+  seaweedfs:
+    image: chrislusf/seaweedfs:latest
+    container_name: aoi-seaweedfs
+    restart: unless-stopped
+    command: "server -s3 -dir=/data"
+    # S3 API only on localhost — no host port needed since app uses Docker network
+    # Uncomment for debugging: - "127.0.0.1:8333:8333"
+    expose:
+      - "8333"
+    volumes:
+      - seaweedfs_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8333/ || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  # ─── AOI Application ──────────────────────────────────────────────────────
+  app:
+    build: .
+    container_name: aoi-app
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      AOI_DATABASE_URL: postgresql+psycopg://aoi:${POSTGRES_PASSWORD}@postgres:5432/aoi
+      AOI_S3_ENDPOINT: http://seaweedfs:8333
+      AOI_DEBUG: "false"
+      AOI_WEB_HOST: "0.0.0.0"
+      AOI_EGRESS_PROXY: http://smokescreen:4750
+    depends_on:
+      postgres:
+        condition: service_healthy
+      seaweedfs:
+        condition: service_healthy
+      smokescreen:
+        condition: service_started
+    # Not exposed to host — nginx is the only entry point
+    expose:
+      - "8000"
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # ─── Scheduler (cron for pipeline runs and health checks) ────────────────────
+  scheduler:
+    build: .
+    container_name: aoi-scheduler
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      AOI_DATABASE_URL: postgresql+psycopg://aoi:${POSTGRES_PASSWORD}@postgres:5432/aoi
+      AOI_S3_ENDPOINT: http://seaweedfs:8333
+      AOI_DEBUG: "false"
+      AOI_EGRESS_PROXY: http://smokescreen:4750
+    depends_on:
+      postgres:
+        condition: service_healthy
+      seaweedfs:
+        condition: service_healthy
+      smokescreen:
+        condition: service_started
+    entrypoint: ["supercronic", "-no-reap", "/app/docker/crontab"]
+
+  # ─── Smokescreen (egress proxy for crawler traffic, ADR 0023) ──────────────
+  # Internal only: app and scheduler reach it as smokescreen:4750.
+  smokescreen:
+    build: docker/smokescreen
+    image: aoi-smokescreen:v0.1.0
+    container_name: aoi-smokescreen
+    restart: unless-stopped
+    expose:
+      - "4750"
+
+  # ─── Grafana (dashboards and alerting) ──────────────────────────────────────
+  grafana:
+    image: grafana/grafana-oss:11.4.0
+    container_name: aoi-grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?set GRAFANA_ADMIN_PASSWORD in .env}
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      AOI_ALERT_EMAIL_TO: ${AOI_ALERT_EMAIL_TO:-admin@localhost}
+      AOI_ALERT_WEBHOOK_URL: ${AOI_ALERT_WEBHOOK_URL:-http://localhost:9999/webhook}
+      GF_SERVER_ROOT_URL: "%(protocol)s://%(domain)s/grafana/"
+      GF_SERVER_SERVE_FROM_SUB_PATH: "true"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    expose:
+      - "3000"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:3000/api/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
+
+  # ─── nginx reverse proxy ───────────────────────────────────────────────────
+  nginx:
+    image: nginx:stable-alpine
+    container_name: aoi-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/htpasswd:/etc/nginx/htpasswd:ro
+      # Certbot volumes (uncomment on VPS after certbot setup):
+      # - /etc/letsencrypt:/etc/letsencrypt:ro
+      # - /var/www/certbot:/var/www/certbot:ro
+      # Static files served directly by nginx
+      - ./aoi/web/static:/app/aoi/web/static:ro
+    depends_on:
+      app:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -S -O /dev/null http://127.0.0.1:80/ 2>&1 | grep -qE 'HTTP/.* (200|401)'"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  pgdata:
+  seaweedfs_data:
+  grafana_data:

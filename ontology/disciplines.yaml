@@ -1,0 +1,143 @@
+# Discipline taxonomy for AOI (M1 slice 6), loaded by `aoi taxonomy sync` into
+# core.discipline and core.discipline_parent.
+#
+# Codes are scheme-prefixed: "fos:<n>" for the OECD Fields of Science and Technology
+# (FOS 2007, Frascati Manual) and "arxiv:<category>" for arXiv categories, which INSPIRE
+# uses for job postings.
+#
+# A discipline may have SEVERAL parents. Overlaps between fields are intended
+# (e.g. medical physics is physics and clinical medicine). Every arXiv physics
+# category reaches fos:1.3 (Physical sciences) through at least one parent.
+#
+# Lines marked "# provisional" are cross-field parents accepted as provisional
+# (2026-10-17). Subsections and overlaps will be
+# refined once the full index exists (plan §8, D-11).
+#
+# Version: 1
+
+oecd_fos_2007:
+  - {code: "fos:1", label: "Natural sciences"}
+  - {code: "fos:1.1", label: "Mathematics", parents: ["fos:1"]}
+  - {code: "fos:1.2", label: "Computer and information sciences", parents: ["fos:1"]}
+  - {code: "fos:1.3", label: "Physical sciences", parents: ["fos:1"]}
+  - {code: "fos:1.4", label: "Chemical sciences", parents: ["fos:1"]}
+  - {code: "fos:1.5", label: "Earth and related environmental sciences", parents: ["fos:1"]}
+  - {code: "fos:1.6", label: "Biological sciences", parents: ["fos:1"]}
+  - {code: "fos:1.7", label: "Other natural sciences", parents: ["fos:1"]}
+
+  - {code: "fos:2", label: "Engineering and technology"}
+  - {code: "fos:2.1", label: "Civil engineering", parents: ["fos:2"]}
+  - {code: "fos:2.2", label: "Electrical engineering, electronic engineering, information engineering", parents: ["fos:2"]}
+  - {code: "fos:2.3", label: "Mechanical engineering", parents: ["fos:2"]}
+  - {code: "fos:2.4", label: "Chemical engineering", parents: ["fos:2"]}
+  - {code: "fos:2.5", label: "Materials engineering", parents: ["fos:2"]}
+  - {code: "fos:2.6", label: "Medical engineering", parents: ["fos:2"]}
+  - {code: "fos:2.7", label: "Environmental engineering", parents: ["fos:2"]}
+  - {code: "fos:2.8", label: "Environmental biotechnology", parents: ["fos:2"]}
+  - {code: "fos:2.9", label: "Industrial biotechnology", parents: ["fos:2"]}
+  - {code: "fos:2.10", label: "Nano-technology", parents: ["fos:2"]}
+  - {code: "fos:2.11", label: "Other engineering and technologies", parents: ["fos:2"]}
+
+  - {code: "fos:3", label: "Medical and health sciences"}
+  - {code: "fos:3.1", label: "Basic medicine", parents: ["fos:3"]}
+  - {code: "fos:3.2", label: "Clinical medicine", parents: ["fos:3"]}
+  - {code: "fos:3.3", label: "Health sciences", parents: ["fos:3"]}
+  - {code: "fos:3.4", label: "Medical biotechnology", parents: ["fos:3"]}
+  - {code: "fos:3.5", label: "Other medical sciences", parents: ["fos:3"]}
+
+  - {code: "fos:4", label: "Agricultural sciences"}
+  - {code: "fos:4.1", label: "Agriculture, forestry, and fisheries", parents: ["fos:4"]}
+  - {code: "fos:4.2", label: "Animal and dairy science", parents: ["fos:4"]}
+  - {code: "fos:4.3", label: "Veterinary science", parents: ["fos:4"]}
+  - {code: "fos:4.4", label: "Agricultural biotechnology", parents: ["fos:4"]}
+  - {code: "fos:4.5", label: "Other agricultural sciences", parents: ["fos:4"]}
+
+  - {code: "fos:5", label: "Social sciences"}
+  - {code: "fos:5.1", label: "Psychology", parents: ["fos:5"]}
+  - {code: "fos:5.2", label: "Economics and business", parents: ["fos:5"]}
+  - {code: "fos:5.3", label: "Educational sciences", parents: ["fos:5"]}
+  - {code: "fos:5.4", label: "Sociology", parents: ["fos:5"]}
+  - {code: "fos:5.5", label: "Law", parents: ["fos:5"]}
+  - {code: "fos:5.6", label: "Political science", parents: ["fos:5"]}
+  - {code: "fos:5.7", label: "Social and economic geography", parents: ["fos:5"]}
+  - {code: "fos:5.8", label: "Media and communications", parents: ["fos:5"]}
+  - {code: "fos:5.9", label: "Other social sciences", parents: ["fos:5"]}
+
+  - {code: "fos:6", label: "Humanities"}
+  - {code: "fos:6.1", label: "History and archaeology", parents: ["fos:6"]}
+  - {code: "fos:6.2", label: "Languages and literature", parents: ["fos:6"]}
+  - {code: "fos:6.3", label: "Philosophy, ethics and religion", parents: ["fos:6"]}
+  - {code: "fos:6.4", label: "Arts (arts, history of arts, performing arts, music)", parents: ["fos:6"]}
+  - {code: "fos:6.5", label: "Other humanities", parents: ["fos:6"]}
+
+arxiv:
+  # Archives with subcategories
+  - {code: "arxiv:astro-ph", label: "Astrophysics", parents: ["fos:1.3"]}
+  - {code: "arxiv:cond-mat", label: "Condensed Matter", parents: ["fos:1.3"]}
+  - {code: "arxiv:nlin", label: "Nonlinear Sciences", parents: ["fos:1.3", "fos:1.1"]}  # provisional
+  - {code: "arxiv:physics", label: "Physics", parents: ["fos:1.3"]}
+
+  # Archives INSPIRE also uses on job postings, outside physics proper
+  - {code: "arxiv:cs", label: "Computer Science", parents: ["fos:1.2"]}  # provisional
+  - {code: "arxiv:math", label: "Mathematics", parents: ["fos:1.1"]}  # provisional
+
+  # Astrophysics
+  - {code: "arxiv:astro-ph.CO", label: "Cosmology and Nongalactic Astrophysics", parents: ["arxiv:astro-ph"]}
+  - {code: "arxiv:astro-ph.EP", label: "Earth and Planetary Astrophysics", parents: ["arxiv:astro-ph", "fos:1.5"]}  # provisional
+  - {code: "arxiv:astro-ph.GA", label: "Astrophysics of Galaxies", parents: ["arxiv:astro-ph"]}
+  - {code: "arxiv:astro-ph.HE", label: "High Energy Astrophysical Phenomena", parents: ["arxiv:astro-ph"]}
+  - {code: "arxiv:astro-ph.IM", label: "Instrumentation and Methods for Astrophysics", parents: ["arxiv:astro-ph"]}
+  - {code: "arxiv:astro-ph.SR", label: "Solar and Stellar Astrophysics", parents: ["arxiv:astro-ph"]}
+
+  # Condensed matter
+  - {code: "arxiv:cond-mat.dis-nn", label: "Disordered Systems and Neural Networks", parents: ["arxiv:cond-mat", "fos:1.2"]}  # provisional
+  - {code: "arxiv:cond-mat.mes-hall", label: "Mesoscale and Nanoscale Physics", parents: ["arxiv:cond-mat", "fos:2.10"]}  # provisional
+  - {code: "arxiv:cond-mat.mtrl-sci", label: "Materials Science", parents: ["arxiv:cond-mat", "fos:2.5"]}  # provisional
+  - {code: "arxiv:cond-mat.other", label: "Other Condensed Matter", parents: ["arxiv:cond-mat"]}
+  - {code: "arxiv:cond-mat.quant-gas", label: "Quantum Gases", parents: ["arxiv:cond-mat"]}
+  - {code: "arxiv:cond-mat.soft", label: "Soft Condensed Matter", parents: ["arxiv:cond-mat", "fos:1.4"]}  # provisional
+  - {code: "arxiv:cond-mat.stat-mech", label: "Statistical Mechanics", parents: ["arxiv:cond-mat"]}
+  - {code: "arxiv:cond-mat.str-el", label: "Strongly Correlated Electrons", parents: ["arxiv:cond-mat"]}
+  - {code: "arxiv:cond-mat.supr-con", label: "Superconductivity", parents: ["arxiv:cond-mat"]}
+
+  # Gravitation, high energy, nuclear, mathematical and quantum physics
+  - {code: "arxiv:gr-qc", label: "General Relativity and Quantum Cosmology", parents: ["fos:1.3"]}
+  - {code: "arxiv:hep-ex", label: "High Energy Physics - Experiment", parents: ["fos:1.3"]}
+  - {code: "arxiv:hep-lat", label: "High Energy Physics - Lattice", parents: ["fos:1.3"]}
+  - {code: "arxiv:hep-ph", label: "High Energy Physics - Phenomenology", parents: ["fos:1.3"]}
+  - {code: "arxiv:hep-th", label: "High Energy Physics - Theory", parents: ["fos:1.3"]}
+  - {code: "arxiv:math-ph", label: "Mathematical Physics", parents: ["fos:1.3", "fos:1.1"]}  # provisional
+  - {code: "arxiv:nucl-ex", label: "Nuclear Experiment", parents: ["fos:1.3"]}
+  - {code: "arxiv:nucl-th", label: "Nuclear Theory", parents: ["fos:1.3"]}
+  - {code: "arxiv:quant-ph", label: "Quantum Physics", parents: ["fos:1.3", "fos:1.2"]}  # provisional
+
+  # Nonlinear sciences
+  - {code: "arxiv:nlin.AO", label: "Adaptation and Self-Organizing Systems", parents: ["arxiv:nlin"]}
+  - {code: "arxiv:nlin.CD", label: "Chaotic Dynamics", parents: ["arxiv:nlin"]}
+  - {code: "arxiv:nlin.CG", label: "Cellular Automata and Lattice Gases", parents: ["arxiv:nlin"]}
+  - {code: "arxiv:nlin.PS", label: "Pattern Formation and Solitons", parents: ["arxiv:nlin"]}
+  - {code: "arxiv:nlin.SI", label: "Exactly Solvable and Integrable Systems", parents: ["arxiv:nlin"]}
+
+  # Physics (physics.*)
+  - {code: "arxiv:physics.acc-ph", label: "Accelerator Physics", parents: ["arxiv:physics"]}
+  - {code: "arxiv:physics.ao-ph", label: "Atmospheric and Oceanic Physics", parents: ["arxiv:physics", "fos:1.5"]}  # provisional
+  - {code: "arxiv:physics.app-ph", label: "Applied Physics", parents: ["arxiv:physics"]}
+  - {code: "arxiv:physics.atm-clus", label: "Atomic and Molecular Clusters", parents: ["arxiv:physics"]}
+  - {code: "arxiv:physics.atom-ph", label: "Atomic Physics", parents: ["arxiv:physics"]}
+  - {code: "arxiv:physics.bio-ph", label: "Biological Physics", parents: ["arxiv:physics", "fos:1.6"]}  # provisional
+  - {code: "arxiv:physics.chem-ph", label: "Chemical Physics", parents: ["arxiv:physics", "fos:1.4"]}  # provisional
+  - {code: "arxiv:physics.class-ph", label: "Classical Physics", parents: ["arxiv:physics"]}
+  - {code: "arxiv:physics.comp-ph", label: "Computational Physics", parents: ["arxiv:physics", "fos:1.2"]}  # provisional
+  - {code: "arxiv:physics.data-an", label: "Data Analysis, Statistics and Probability", parents: ["arxiv:physics", "fos:1.1"]}  # provisional
+  - {code: "arxiv:physics.ed-ph", label: "Physics Education", parents: ["arxiv:physics", "fos:5.3"]}  # provisional
+  - {code: "arxiv:physics.flu-dyn", label: "Fluid Dynamics", parents: ["arxiv:physics", "fos:2.3"]}  # provisional
+  - {code: "arxiv:physics.gen-ph", label: "General Physics", parents: ["arxiv:physics"]}
+  - {code: "arxiv:physics.geo-ph", label: "Geophysics", parents: ["arxiv:physics", "fos:1.5"]}  # provisional
+  - {code: "arxiv:physics.hist-ph", label: "History and Philosophy of Physics", parents: ["arxiv:physics", "fos:6.1", "fos:6.3"]}  # provisional
+  - {code: "arxiv:physics.ins-det", label: "Instrumentation and Detectors", parents: ["arxiv:physics", "fos:2.2"]}  # provisional
+  - {code: "arxiv:physics.med-ph", label: "Medical Physics", parents: ["arxiv:physics", "fos:3.2", "fos:2.6"]}  # provisional
+  - {code: "arxiv:physics.optics", label: "Optics", parents: ["arxiv:physics", "fos:2.2"]}  # provisional
+  - {code: "arxiv:physics.plasm-ph", label: "Plasma Physics", parents: ["arxiv:physics"]}
+  - {code: "arxiv:physics.pop-ph", label: "Popular Physics", parents: ["arxiv:physics"]}
+  - {code: "arxiv:physics.soc-ph", label: "Physics and Society", parents: ["arxiv:physics", "fos:5.4"]}  # provisional
+  - {code: "arxiv:physics.space-ph", label: "Space Physics", parents: ["arxiv:physics", "fos:1.5"]}  # provisional

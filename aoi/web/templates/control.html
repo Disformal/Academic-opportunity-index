@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Control{% endblock %}
+{% block content %}
+<meta http-equiv="refresh" content="10">
+<section class="control-section">
+  <h1>Pipeline Control</h1>
+
+  {% if message %}
+  <div class="flash flash-{{ message_type|default('info') }}">{{ message }}</div>
+  {% endif %}
+
+  <h2>Sources</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Domain</th>
+        <th>Type</th>
+        <th>Enabled</th>
+        <th>Last Harvested</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for src in sources %}
+      <tr>
+        <td><a href="/source/{{ src.id }}">{{ src.name }}</a></td>
+        <td>{{ src.domain }}</td>
+        <td>{{ src.source_type }}</td>
+        <td>
+          <span class="badge badge-{{ 'success' if src.enabled else 'muted' }}">
+            {{ "Yes" if src.enabled else "No" }}
+          </span>
+        </td>
+        <td>{{ src.last_harvested_at.strftime('%Y-%m-%d %H:%M') if src.last_harvested_at else "Never" }}</td>
+        <td class="actions">
+          <form method="post" action="/control/toggle/{{ src.id }}">
+            <button type="submit" class="btn btn-sm btn-{{ 'warning' if src.enabled else 'success' }}">
+              {{ "Disable" if src.enabled else "Enable" }}
+            </button>
+          </form>
+          {% if src.enabled %}
+          <form method="post" action="/control/run/{{ src.name }}">
+            <button type="submit" class="btn btn-sm btn-accent"
+              {% if src.name in running_sources %}disabled title="Already running"{% endif %}>
+              {% if src.name in running_sources %}Running…{% else %}Run Now{% endif %}
+            </button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h2>Recent Runs</h2>
+  {% if runs %}
+  <table>
+    <thead>
+      <tr>
+        <th>Source</th>
+        <th>Started</th>
+        <th>Finished</th>
+        <th>Status</th>
+        <th>Created</th>
+        <th>Updated</th>
+        <th>Errors</th>
+        <th>Triggered By</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for run, src_name in runs %}
+      <tr>
+        <td>{{ src_name }}</td>
+        <td>{{ run.started_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+        <td>{{ run.finished_at.strftime('%Y-%m-%d %H:%M:%S') if run.finished_at else "—" }}</td>
+        <td>
+          <span class="badge badge-{{ 'success' if run.status == 'completed' else ('danger' if run.status == 'failed' else ('warning' if run.status == 'running' else 'muted')) }}">
+            {{ run.status }}
+          </span>
+        </td>
+        <td>{{ run.created }}</td>
+        <td>{{ run.updated }}</td>
+        <td>{{ run.errors }}</td>
+        <td>{{ run.triggered_by }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>No pipeline runs recorded yet.</p>
+  {% endif %}
+
+  <div class="control-links">
+    <p>For detailed graphs and time-series analysis, visit
+      <a href="http://localhost:3000" target="_blank" rel="noopener">Grafana Dashboards</a>.
+    </p>
+  </div>
+</section>
+{% endblock %}

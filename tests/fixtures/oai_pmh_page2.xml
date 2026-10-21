@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/">
+  <responseDate>2026-09-01T00:00:01Z</responseDate>
+  <request verb="ListRecords" resumptionToken="abc123token">https://zenodo.org/oai2d</request>
+  <ListRecords>
+    <record>
+      <header>
+        <identifier>oai:zenodo.org:99999</identifier>
+        <datestamp>2026-08-25</datestamp>
+        <setSpec>user-hep</setSpec>
+      </header>
+      <metadata>
+        <oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
+                   xmlns:dc="http://purl.org/dc/elements/1.1/">
+          <dc:title>Research Engineer Position in Detector Physics</dc:title>
+          <dc:description>Permanent research engineer role at DESY Hamburg.</dc:description>
+          <dc:date>2027-01-15</dc:date>
+          <dc:publisher>DESY</dc:publisher>
+          <dc:identifier>https://zenodo.org/record/99999</dc:identifier>
+          <dc:coverage>Germany</dc:coverage>
+        </oai_dc:dc>
+      </metadata>
+    </record>
+    <record>
+      <header status="deleted">
+        <identifier>oai:zenodo.org:11111</identifier>
+        <datestamp>2026-08-10</datestamp>
+      </header>
+    </record>
+    <resumptionToken></resumptionToken>
+  </ListRecords>
+</OAI-PMH>

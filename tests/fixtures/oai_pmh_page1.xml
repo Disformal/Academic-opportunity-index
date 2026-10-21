@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/">
+  <responseDate>2026-09-01T00:00:00Z</responseDate>
+  <request verb="ListRecords" metadataPrefix="oai_dc">https://zenodo.org/oai2d</request>
+  <ListRecords>
+    <record>
+      <header>
+        <identifier>oai:zenodo.org:12345</identifier>
+        <datestamp>2026-08-15</datestamp>
+        <setSpec>user-hep</setSpec>
+      </header>
+      <metadata>
+        <oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
+                   xmlns:dc="http://purl.org/dc/elements/1.1/">
+          <dc:title>Postdoctoral Fellowship in High Energy Physics</dc:title>
+          <dc:description>Two-year postdoc position at CERN in the ATLAS group.</dc:description>
+          <dc:date>2026-12-01</dc:date>
+          <dc:publisher>CERN</dc:publisher>
+          <dc:identifier>oai:zenodo.org:12345</dc:identifier>
+          <dc:identifier>https://zenodo.org/record/12345</dc:identifier>
+          <dc:coverage>Switzerland</dc:coverage>
+        </oai_dc:dc>
+      </metadata>
+    </record>
+    <record>
+      <header>
+        <identifier>oai:zenodo.org:67890</identifier>
+        <datestamp>2026-08-20</datestamp>
+        <setSpec>user-hep</setSpec>
+      </header>
+      <metadata>
+        <oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
+                   xmlns:dc="http://purl.org/dc/elements/1.1/">
+          <dc:title>PhD Fellowship in Particle Physics</dc:title>
+          <dc:description>PhD fellowship at University of Geneva in the CMS group.</dc:description>
+          <dc:date>2026-11-30</dc:date>
+          <dc:publisher>University of Geneva</dc:publisher>
+          <dc:identifier>https://zenodo.org/record/67890</dc:identifier>
+        </oai_dc:dc>
+      </metadata>
+    </record>
+    <resumptionToken>abc123token</resumptionToken>
+  </ListRecords>
+</OAI-PMH>

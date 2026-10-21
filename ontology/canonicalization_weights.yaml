@@ -1,0 +1,27 @@
+version: 0.1.0
+
+derivation:
+  human:             1.00
+  official_api:      0.98
+  structured_markup: 0.92
+  template:          0.82
+  parser:            0.78
+  inherited:         0.40
+
+first_party:
+  true:  1.00
+  false: 0.75
+
+trust_tier:
+  1: 1.00
+  2: 0.90
+  3: 0.80
+  4: 0.68
+  5: 0.55
+
+recency_half_life_days: 45
+
+disputed_if_within_percent: 15
+
+critical_fields: [deadline, application_url, status]
+critical_minimum_score: 0.80

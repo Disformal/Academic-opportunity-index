@@ -1,0 +1,14 @@
+apiVersion: 1
+# The Phase 2a rules queried the old public tables, which M3 drops; they are removed from
+# Grafana here. Alerts on the new model come with the M3+ dashboards (plan §4.10).
+deleteRules:
+  - orgId: 1
+    uid: aoi-alert-high-error-rate
+  - orgId: 1
+    uid: aoi-alert-zero-new-records
+  - orgId: 1
+    uid: aoi-alert-consecutive-failures
+  - orgId: 1
+    uid: aoi-alert-source-stale
+  - orgId: 1
+    uid: aoi-alert-circuit-breaker

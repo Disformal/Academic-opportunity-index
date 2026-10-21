@@ -1,0 +1,106 @@
+services:
+
+  # ─── PostgreSQL 16 ───────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: aoi
+      POSTGRES_PASSWORD: changeme
+      POSTGRES_DB: aoi
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Creates the aoi_test database on first container start
+      - ./docker/init-test-db.sql:/docker-entrypoint-initdb.d/01-init-test-db.sql
+      - ./docker/init-grafana-ro.sql:/docker-entrypoint-initdb.d/02-init-grafana-ro.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aoi -d aoi"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  # ─── SeaweedFS (S3-compatible object store) ─────────────────────────────────
+  # Replaces MinIO, which was archived in 2025. SeaweedFS provides an
+  # S3-compatible API. The application uses standard S3 operations via boto3.
+  seaweedfs:
+    image: chrislusf/seaweedfs:latest
+    command: "server -s3 -dir=/data"
+    ports:
+      - "8333:8333"   # S3 API — used by the application
+      - "9333:9333"   # Master server
+    volumes:
+      - seaweedfs_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8333/ || exit 0"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
+
+  # ─── Smokescreen (egress proxy for crawler traffic, ADR 0023) ──────────────
+  # Optional in dev: set AOI_EGRESS_PROXY=http://localhost:4750 to use it.
+  smokescreen:
+    build: docker/smokescreen
+    image: aoi-smokescreen:v0.1.0
+    ports:
+      - "127.0.0.1:4750:4750"
+    restart: unless-stopped
+
+  # ─── Grafana (dashboards and alerting) ──────────────────────────────────────
+  grafana:
+    image: grafana/grafana-oss:11.4.0
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      # Contact points (provisioning/alerting/contactpoints.yaml) need non-empty
+      # values or Grafana refuses to start; same defaults as docker-compose.prod.yml.
+      AOI_ALERT_EMAIL_TO: ${AOI_ALERT_EMAIL_TO:-admin@localhost}
+      AOI_ALERT_WEBHOOK_URL: ${AOI_ALERT_WEBHOOK_URL:-http://localhost:9999/webhook}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  seaweedfs_data:
+  grafana_data:
+
+# ─── Usage ────────────────────────────────────────────────────────────────────
+#
+# Start all services:
+#   docker compose up -d
+#
+# Stop without deleting data:
+#   docker compose stop
+#
+# Stop and delete all data (full reset):
+#   docker compose down -v
+#
+# View logs:
+#   docker compose logs -f postgres
+#   docker compose logs -f seaweedfs
+#
+# Connect to PostgreSQL directly:
+#   docker compose exec postgres psql -U aoi -d aoi
+#
+# S3 API endpoint:
+#   http://localhost:8333
+#
+# ─── First-time setup ─────────────────────────────────────────────────────────
+#
+# 1. docker compose up -d
+# 2. Wait ~10 seconds for services to be healthy
+# 3. uv run alembic upgrade head     (apply schema to aoi database)
+# 4. uv run pytest tests/ -v         (all green = environment is ready)

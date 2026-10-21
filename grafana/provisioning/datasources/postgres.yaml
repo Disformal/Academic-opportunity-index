@@ -1,0 +1,13 @@
+apiVersion: 1
+datasources:
+  - name: AOI PostgreSQL
+    uid: aoi-postgres
+    type: postgres
+    url: postgres:5432
+    database: aoi
+    user: aoi_grafana_ro
+    secureJsonData:
+      password: grafana_readonly
+    jsonData:
+      sslmode: disable
+      postgresVersion: 1600

@@ -1,0 +1,7 @@
+# Thresholds governing the mass-closure circuit breaker.
+# Kept in YAML (not code) so a threshold change appears as a data diff,
+# is reviewable without reading Python, and can be A/B tested by swapping
+# the file rather than deploying new code.
+circuit_breaker:
+  proportion: 0.15   # close at most this fraction of active records per run
+  floor: 20          # always allow at least this many closures regardless of proportion

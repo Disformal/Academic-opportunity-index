@@ -1,0 +1,294 @@
+{
+  "uid": "aoi-pipeline-tasks",
+  "title": "Pipeline (tasks)",
+  "description": "The task queue (ADR 0014, 0030): what is open, what is failing, and why.",
+  "tags": [
+    "aoi"
+  ],
+  "timezone": "browser",
+  "editable": true,
+  "refresh": "1m",
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "source",
+        "type": "query",
+        "datasource": {
+          "type": "postgres",
+          "uid": "aoi-postgres"
+        },
+        "query": "SELECT name AS __text, id::text AS __value FROM core.source ORDER BY name",
+        "refresh": 1,
+        "includeAll": true,
+        "multi": false,
+        "current": {},
+        "sort": 1
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Open tasks",
+      "description": "Queued, running or waiting for a retry",
+      "type": "stat",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "aoi-postgres"
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT count(*) AS \"Open\" FROM ops.task WHERE state IN ('queued', 'running', 'failed') AND source_id::text IN (${source:sqlstring})",
+          "format": "table",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value"
+      }
+    },
+    {
+      "id": 2,
+      "title": "Retrying",
+      "description": "Failed attempts waiting for their backoff (state failed)",
+      "type": "stat",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 0
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "aoi-postgres"
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT count(*) AS \"Retrying\" FROM ops.task WHERE state = 'failed' AND source_id::text IN (${source:sqlstring})",
+          "format": "table",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "orange"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value"
+      }
+    },
+    {
+      "id": 3,
+      "title": "Dead tasks",
+      "description": "Out of attempts and not yet requeued: each needs a human (listed below)",
+      "type": "stat",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "aoi-postgres"
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT count(*) AS \"Dead\" FROM ops.task t WHERE t.state = 'dead' AND NOT EXISTS (SELECT 1 FROM ops.task r WHERE r.retry_of = t.id) AND t.source_id::text IN (${source:sqlstring})",
+          "format": "table",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "red"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value"
+      }
+    },
+    {
+      "id": 4,
+      "title": "Stuck leases",
+      "description": "Running longer than the 10-minute lease; the scheduler's reaper should clear these",
+      "type": "stat",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "aoi-postgres"
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT count(*) AS \"Stuck\" FROM ops.task WHERE state = 'running' AND locked_at < now() - interval '10 minutes' AND source_id::text IN (${source:sqlstring})",
+          "format": "table",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "purple"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value"
+      }
+    },
+    {
+      "id": 5,
+      "title": "Tasks per hour by outcome",
+      "description": "From ops.pipeline_run, by hour the task was created",
+      "type": "timeseries",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 4
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "aoi-postgres"
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT hour AS time, sum(done) AS \"Done\", sum(failed) AS \"Retrying\", sum(dead) AS \"Dead\" FROM ops.pipeline_run WHERE source_id::text IN (${source:sqlstring}) AND $__timeFilter(hour) GROUP BY hour ORDER BY hour",
+          "format": "time_series",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 60,
+            "stacking": {
+              "mode": "normal"
+            }
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 6,
+      "title": "Finished tasks per hour by kind",
+      "description": "fetch, extract, discover",
+      "type": "timeseries",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 4
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "aoi-postgres"
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT hour AS time, kind AS metric, sum(done) AS value FROM ops.pipeline_run WHERE source_id::text IN (${source:sqlstring}) AND $__timeFilter(hour) GROUP BY hour, kind ORDER BY hour",
+          "format": "time_series",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 60,
+            "stacking": {
+              "mode": "normal"
+            }
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 7,
+      "title": "Failing and dead tasks",
+      "description": "Retrying tasks and dead tasks awaiting review, with the last error (newest first). After review: aoi task requeue <Task>",
+      "type": "table",
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 12
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "aoi-postgres"
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT t.updated_at AS \"When\", t.id AS \"Task\", s.name AS \"Source\", t.kind AS \"Kind\", t.state AS \"State\", t.attempts AS \"Attempts\", t.run_after AS \"Next attempt\", t.last_error AS \"Last error\" FROM ops.task t JOIN core.source s ON s.id = t.source_id WHERE (t.state = 'failed' OR (t.state = 'dead' AND NOT EXISTS (SELECT 1 FROM ops.task r WHERE r.retry_of = t.id))) AND t.source_id::text IN (${source:sqlstring}) ORDER BY t.updated_at DESC LIMIT 100",
+          "format": "table",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      }
+    }
+  ],
+  "schemaVersion": 39,
+  "version": 1
+}

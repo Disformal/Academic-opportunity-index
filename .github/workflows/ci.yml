@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: aoi_test
+          POSTGRES_PASSWORD: aoi_test
+          POSTGRES_DB: aoi_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      AOI_DATABASE_URL: postgresql+psycopg://aoi_test:aoi_test@localhost:5432/aoi_test
+      AOI_TEST_DATABASE_URL: postgresql+psycopg://aoi_test:aoi_test@localhost:5432/aoi_test
+      AOI_S3_ENDPOINT: http://localhost:8333
+      AOI_S3_ACCESS_KEY: minioadmin
+      AOI_S3_SECRET_KEY: minioadmin
+      AOI_SECRET_KEY: ci-test-secret-key-not-for-production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Start SeaweedFS (S3 API, same image as docker-compose.yml)
+        run: |
+          docker run -d --name seaweedfs \
+            -p 8333:8333 \
+            chrislusf/seaweedfs:latest server -s3 -dir=/data
+          timeout 60 sh -c 'until curl -s -o /dev/null http://localhost:8333/; do sleep 1; done'
+
+      - name: Lockfile matches pyproject
+        run: uv lock --check
+
+      - name: Lint
+        run: uv run ruff check .
+
+      - name: Format check
+        run: uv run ruff format --check .
+
+      - name: Type check
+        run: uv run mypy aoi/
+
+      # docker/init-grafana-ro.sql does this locally; migrations grant the role access
+      # only if it exists when they run.
+      - name: Create the read-only Grafana role
+        run: psql postgresql://aoi_test:aoi_test@localhost:5432/aoi_test -c "CREATE USER aoi_grafana_ro WITH PASSWORD 'grafana_readonly'"
+
+      - name: Migration round-trip
+        run: |
+          uv run alembic upgrade head
+          uv run alembic downgrade base
+          uv run alembic upgrade head
+
+      - name: Test
+        run: uv run pytest tests/ -v -m "not live" --cov=aoi --cov-report=term-missing
