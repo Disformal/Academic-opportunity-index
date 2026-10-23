@@ -235,6 +235,64 @@ def test_the_stated_dates_are_the_resolved_deadline_and_posting_date(
     assert version.stated_posted_at == datetime(2026, 10, 16, tzinfo=UTC)
 
 
+@pytest.mark.parametrize("stated", ["2010-01", "2011"])
+def test_a_date_stated_only_to_the_month_or_year_leaves_the_stated_column_empty(
+    engine: Engine, posting_id: uuid.UUID, stated: str
+) -> None:
+    # Real INSPIRE archive values (deadline_date of jobs from 2010-2019).
+    _assert(engine, posting_id, "deadline", stated, T1)
+    _assert(engine, posting_id, "posted_at", stated, T1)
+
+    _resolve(engine, posting_id)
+
+    (version,) = _history(engine, posting_id)
+    assert (version.stated_deadline_at, version.stated_posted_at) == (None, None)
+    assert version.snapshot["fields"]["deadline"] == stated
+
+
+@pytest.mark.parametrize("stated", ["8888-12-31", "1111-01-01"])
+def test_a_placeholder_date_leaves_the_stated_column_empty(
+    engine: Engine, posting_id: uuid.UUID, stated: str
+) -> None:
+    # INSPIRE archive jobs state "no deadline" as 8888 or 1111 (8888-12-31 is a real value).
+    _assert(engine, posting_id, "deadline", stated, T1)
+
+    _resolve(engine, posting_id)
+
+    (version,) = _history(engine, posting_id)
+    assert version.stated_deadline_at is None
+    assert version.snapshot["fields"]["deadline"] == stated
+
+
+def test_the_placeholder_migration_clears_only_placeholder_stated_times_and_reverses(
+    engine: Engine, posting_id: uuid.UUID, migrate: Callable[..., None]
+) -> None:
+    def version(at: datetime, deadline: str, stated: datetime | None) -> PostingHistory:
+        snapshot = {"fields": {"deadline": deadline}, "state": "closed", "closure_reason": None}
+        return PostingHistory(
+            posting_id=posting_id,
+            observed_from=at,
+            observed_to=T2 if at == T1 else None,
+            stated_deadline_at=stated,
+            snapshot=snapshot,
+        )
+
+    real = datetime(2026, 11, 1, tzinfo=UTC)
+    with Session(engine) as session, session.begin():
+        session.add(version(T1, "2026-11-01", real))
+        session.add(version(T2, "8888-12-31", None))  # as resolved under ADR 0036
+
+    def stated() -> list[datetime | None]:
+        return [v.stated_deadline_at for v in _history(engine, posting_id)]
+
+    try:
+        migrate("downgrade", "ff6e6f4fa217")
+        assert stated() == [real, datetime(8888, 12, 31, tzinfo=UTC)]
+    finally:
+        migrate("upgrade", "head")
+    assert stated() == [real, None]
+
+
 def test_a_new_version_carries_the_lifecycle_state_of_the_one_before(
     engine: Engine, posting_id: uuid.UUID
 ) -> None:

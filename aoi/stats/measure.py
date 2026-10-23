@@ -1,7 +1,6 @@
-"""Decision-point measurement functions.
+"""Measurement functions: the Wilson bound and the overlap coefficient.
 
-Pure functions for computing metrics used at the Phase 1 → Phase 2 gate.
-No database access — takes data as arguments.
+Pure functions, no database access: they take data as arguments.
 """
 
 import math

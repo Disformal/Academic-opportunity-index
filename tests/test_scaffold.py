@@ -50,12 +50,11 @@ def test_package_submodules_importable() -> None:
     """All sub-packages should be importable without errors."""
     import aoi.db
     import aoi.pipeline
-    import aoi.pipeline.sources
+    import aoi.stats
     import aoi.storage
-    import aoi.web
 
     # All are packages (have __path__)
-    for mod in (aoi.db, aoi.pipeline, aoi.pipeline.sources, aoi.storage, aoi.web):
+    for mod in (aoi.db, aoi.pipeline, aoi.stats, aoi.storage):
         assert hasattr(mod, "__path__"), f"{mod.__name__} is not a package"
 
 

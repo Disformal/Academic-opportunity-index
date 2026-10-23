@@ -1,7 +1,4 @@
-"""ORM models for the layered schemas of ADR 0007 (evidence, core, analytics, ops).
-
-Separate from aoi.db.models (the frozen `public` tables) until M3 drops those.
-"""
+"""ORM models for the layered schemas of ADR 0007 (evidence, core, analytics, ops)."""
 
 from aoi.db.schema import core, evidence, ops
 from aoi.db.schema.base import LayerBase

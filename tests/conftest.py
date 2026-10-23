@@ -39,17 +39,36 @@ def pytest_configure(config: pytest.Config) -> None:
 @pytest.fixture(scope="session", autouse=True)
 def apply_migrations() -> None:
     """Run Alembic migrations against the test database before any tests."""
-    result = subprocess.run(
-        ["uv", "run", "alembic", "upgrade", "head"],
-        env={**os.environ, "AOI_DATABASE_URL": os.environ["AOI_TEST_DATABASE_URL"]},
-        capture_output=True,
-        text=True,
-    )
+    result = _alembic("upgrade", "head")
     if result.returncode != 0:
         pytest.exit(
             f"Alembic migration failed on test database:\n{result.stderr}",
             returncode=1,
         )
+
+
+def _alembic(*args: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["uv", "run", "alembic", *args],
+        env={**os.environ, "AOI_DATABASE_URL": os.environ["AOI_TEST_DATABASE_URL"]},
+        capture_output=True,
+        text=True,
+    )
+
+
+@pytest.fixture()
+def migrate() -> Callable[..., None]:
+    """Run an Alembic command (e.g. "downgrade", "<rev>") on the test database; it must succeed.
+
+    A test that downgrades upgrades to head again in a `finally`, or later tests run on an old
+    schema.
+    """
+
+    def run(*args: str) -> None:
+        result = _alembic(*args)
+        assert result.returncode == 0, result.stderr
+
+    return run
 
 
 @pytest.fixture(scope="session")

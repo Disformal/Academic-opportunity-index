@@ -1,7 +1,8 @@
 """The extract handler (plan §4.3, ADR 0030, 0031): one fetch's WARC through its source's adapter.
 
-parse_listing runs on listing and feed targets: the targets it links to become crawl targets, and
-the postings it shows are sighted. parse_detail runs on every document: its postings are found or
+parse_listing runs on listing and feed targets: the targets it links to become crawl targets
+(unless the target is retired: its stored pages must not regrow what it replaced), and the
+postings it shows are sighted. parse_detail runs on every document: its postings are found or
 created by within-source identity (ADR 0008) and its assertions written with the fetch, the run
 and their evidence pointer. Every posting shown gets one sighting per fetch (ADR 0033). A fetch is
 extracted once per extractor version (ADR 0030 §2). A posting that gets new assertions gets a
@@ -73,7 +74,7 @@ def make_extract_handler(adapters: Mapping[str, Adapter]) -> Handler:
 
         if target.role in _LISTING_ROLES:
             page = adapter.parse_listing(doc)
-            for spec in page.targets:
+            for spec in page.targets if target.retired_at is None else ():
                 add_target(session, source.id, spec)
             for ref in page.refs:
                 _sighted(session, source.id, ref, fetch)

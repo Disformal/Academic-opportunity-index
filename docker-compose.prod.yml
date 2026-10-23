@@ -5,7 +5,8 @@
 # Prerequisites:
 #   1. Copy .env.example to .env and set real values
 #   2. Create htpasswd file: htpasswd -c nginx/htpasswd aoi_admin
-#   3. After first start: docker compose -f docker-compose.prod.yml exec app alembic upgrade head
+#   3. Migrations and the aoi scheduler/worker services return in M9 (the old app and cron
+#      scheduler were removed in M3, ADR 0032)
 #
 # TLS (on VPS):
 #   After certbot is configured, mount certs into nginx and update nginx/default.conf.
@@ -51,56 +52,8 @@ services:
       retries: 10
       start_period: 10s
 
-  # ─── AOI Application ──────────────────────────────────────────────────────
-  app:
-    build: .
-    container_name: aoi-app
-    restart: unless-stopped
-    env_file: .env
-    environment:
-      AOI_DATABASE_URL: postgresql+psycopg://aoi:${POSTGRES_PASSWORD}@postgres:5432/aoi
-      AOI_S3_ENDPOINT: http://seaweedfs:8333
-      AOI_DEBUG: "false"
-      AOI_WEB_HOST: "0.0.0.0"
-      AOI_EGRESS_PROXY: http://smokescreen:4750
-    depends_on:
-      postgres:
-        condition: service_healthy
-      seaweedfs:
-        condition: service_healthy
-      smokescreen:
-        condition: service_started
-    # Not exposed to host — nginx is the only entry point
-    expose:
-      - "8000"
-    healthcheck:
-      test: ["CMD", "curl", "-sf", "http://localhost:8000/health"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-
-  # ─── Scheduler (cron for pipeline runs and health checks) ────────────────────
-  scheduler:
-    build: .
-    container_name: aoi-scheduler
-    restart: unless-stopped
-    env_file: .env
-    environment:
-      AOI_DATABASE_URL: postgresql+psycopg://aoi:${POSTGRES_PASSWORD}@postgres:5432/aoi
-      AOI_S3_ENDPOINT: http://seaweedfs:8333
-      AOI_DEBUG: "false"
-      AOI_EGRESS_PROXY: http://smokescreen:4750
-    depends_on:
-      postgres:
-        condition: service_healthy
-      seaweedfs:
-        condition: service_healthy
-      smokescreen:
-        condition: service_started
-    entrypoint: ["supercronic", "-no-reap", "/app/docker/crontab"]
-
   # ─── Smokescreen (egress proxy for crawler traffic, ADR 0023) ──────────────
-  # Internal only: app and scheduler reach it as smokescreen:4750.
+  # Internal only: reached as smokescreen:4750 (the aoi scheduler and worker services return in M9, ADR 0032).
   smokescreen:
     build: docker/smokescreen
     image: aoi-smokescreen:v0.1.0
@@ -152,11 +105,6 @@ services:
       # Certbot volumes (uncomment on VPS after certbot setup):
       # - /etc/letsencrypt:/etc/letsencrypt:ro
       # - /var/www/certbot:/var/www/certbot:ro
-      # Static files served directly by nginx
-      - ./aoi/web/static:/app/aoi/web/static:ro
-    depends_on:
-      app:
-        condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "wget -S -O /dev/null http://127.0.0.1:80/ 2>&1 | grep -qE 'HTTP/.* (200|401)'"]
       interval: 10s

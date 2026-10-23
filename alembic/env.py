@@ -25,10 +25,9 @@ if not _database_url:
 if _database_url:
     config.set_main_option("sqlalchemy.url", _database_url)
 
-from aoi.db.models import Base  # noqa: E402
 from aoi.db.schema import LayerBase  # noqa: E402
 
-target_metadata = [Base.metadata, LayerBase.metadata]
+target_metadata = LayerBase.metadata
 
 # Autogenerate compares only our schemas (ADR 0007), not system ones.
 _SCHEMAS = {None, "public", "evidence", "core", "analytics", "ops"}

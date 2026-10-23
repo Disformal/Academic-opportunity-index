@@ -221,6 +221,21 @@ def test_a_link_to_an_existing_target_does_not_duplicate_it(
     assert _count(engine, CrawlTarget) == 1
 
 
+def test_a_stored_page_of_a_retired_target_adds_no_targets_but_still_records_its_postings(
+    engine: Engine, queue_source_id: uuid.UUID, add_target: AddTarget
+) -> None:
+    target_id = add_target(url=LISTING_URL)
+    fetch_id = _stored_fetch(engine, target_id, _page(2911234))
+    with Session(engine) as session, session.begin():
+        session.get_one(CrawlTarget, target_id).retired_at = FIRST_SEEN + timedelta(hours=1)
+
+    _extract(engine, queue_source_id)
+
+    assert _count(engine, CrawlTarget) == 1
+    assert _sightings(engine) == [("2911234", fetch_id, FIRST_SEEN)]
+    assert _count(engine, Assertion) == 1
+
+
 def test_a_detail_document_is_not_parsed_as_a_listing(
     engine: Engine, queue_source_id: uuid.UUID, add_target: AddTarget
 ) -> None:

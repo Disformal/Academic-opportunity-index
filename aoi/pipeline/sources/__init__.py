@@ -1,1 +1,0 @@
-"""AOI pipeline sources package."""

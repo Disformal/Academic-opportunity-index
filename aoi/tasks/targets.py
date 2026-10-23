@@ -1,10 +1,16 @@
-"""Crawl targets found by adapters (discover, listings): find or create, with their host."""
+"""Crawl targets found by adapters (discover, listings): find or create, with their host.
+
+Two workers may add the same new URL, or a URL on the same new host, at once. Each insert skips a
+row that already exists (waiting for one another transaction holds), and the read that follows
+sees the committed row.
+"""
 
 import hashlib
 import uuid
 from urllib.parse import urlsplit
 
 from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
 from aoi.adapters.protocol import CrawlTargetSpec
@@ -16,28 +22,28 @@ def add_target(session: Session, source_id: uuid.UUID, spec: CrawlTargetSpec) ->
     """The source's target for the spec's canonical URL; a new one is due at once."""
     url = canonicalize(spec.url)
     url_sha256 = hashlib.sha256(url.encode()).hexdigest()
-    target = session.scalars(
-        select(CrawlTarget).where(
-            CrawlTarget.source_id == source_id, CrawlTarget.url_sha256 == url_sha256
-        )
-    ).first()
-    if target is None:
-        target = CrawlTarget(
+    session.execute(
+        insert(CrawlTarget)
+        .values(
             source_id=source_id,
             host_id=_host(session, urlsplit(url).hostname or "").id,
             url=url,
             url_sha256=url_sha256,
             role=spec.role,
         )
-        session.add(target)
-        session.flush()
-    return target
+        .on_conflict_do_nothing(constraint="uq_crawl_target_source_url")
+    )
+    return session.scalars(
+        select(CrawlTarget).where(
+            CrawlTarget.source_id == source_id, CrawlTarget.url_sha256 == url_sha256
+        )
+    ).one()
 
 
 def _host(session: Session, hostname: str) -> Host:
-    host = session.scalars(select(Host).where(Host.hostname == hostname)).first()
-    if host is None:
-        host = Host(hostname=hostname)
-        session.add(host)
-        session.flush()
-    return host
+    session.execute(
+        insert(Host)
+        .values(hostname=hostname)
+        .on_conflict_do_nothing(constraint="uq_host_hostname")
+    )
+    return session.scalars(select(Host).where(Host.hostname == hostname)).one()

@@ -15,6 +15,7 @@ nothing is dropped. A date-only `deadline` or `posted_at` is stored as midnight 
 (valid-time) columns; the snapshot keeps the source's form.
 """
 
+import re
 import uuid
 from collections.abc import Sequence
 from datetime import UTC, datetime
@@ -30,6 +31,9 @@ from aoi.db.schema.enums import AssertionMethod, TaskState
 from aoi.db.schema.ops import Task
 
 log = structlog.get_logger()
+
+_MONTH_OR_YEAR = re.compile(r"\d{4}(-\d{2})?")
+_PLAUSIBLE_YEARS = range(1900, 2201)
 
 METHOD_RANK = {
     AssertionMethod.OFFICIAL_API: 3,
@@ -52,10 +56,14 @@ def _fields_as_of(assertions: Sequence[Assertion], at: datetime) -> dict[str, An
 
 
 def stated_time(value: str | None) -> datetime | None:
-    """A stated date or time from a resolved field; a bare date is midnight UTC."""
-    if value is None:
+    """A stated date or time from a resolved field; a bare date is midnight UTC. A date stated
+    only to the month or year (ADR 0035), or with a placeholder year such as 8888 (ADR 0036), has
+    no stated time: the field keeps it as stated."""
+    if value is None or _MONTH_OR_YEAR.fullmatch(value):
         return None
     moment = datetime.fromisoformat(value)
+    if moment.year not in _PLAUSIBLE_YEARS:
+        return None
     return moment if moment.tzinfo else moment.replace(tzinfo=UTC)
 
 
